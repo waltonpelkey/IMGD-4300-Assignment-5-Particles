@@ -4,7 +4,7 @@ const sg = await gulls.init()
 const render_shader = await gulls.import('./render.wgsl')
 const compute_shader = await gulls.import('./compute.wgsl')
 
-const num_particles = 100000                                    // Number of particles in the simulation
+const num_particles = 10000                                    // Number of particles in the simulation
 const num_properties = 10                                       // Each particle has 10 properties that it tracks
 const hidden_position = 2.0      
 
