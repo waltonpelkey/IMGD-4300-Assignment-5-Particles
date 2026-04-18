@@ -115,6 +115,22 @@ fn cs(@builtin(global_invocation_id) global_invocation_id: vec3u) {
   let random_seed = f32(particle_index);                         // use the index as random seed value from determinism and garunteed unique random values
   let particle_age = current_time - state[particle_index].birth; // get particle age  why subtracting time of birth from current time
 
+  // check if the particle is hidden at the parked position
+  let is_hidden =
+    state[particle_index].pos.x > 1.5 ||
+    state[particle_index].pos.y > 1.5;
+
+  // hidden particles should only come back a few at a time
+  if (is_hidden) {
+    if (
+      emitter_active > 0.5 &&
+      hash(vec2f(random_seed, frame * 0.17)) > 0.975
+    ) {
+      respawn_particle(particle_index, current_time);
+    }
+    return;
+  }
+
   // check if the particle is off screen
   let is_offscreen =
     state[particle_index].pos.y > 1.2 ||

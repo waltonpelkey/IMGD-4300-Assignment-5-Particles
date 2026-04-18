@@ -116,6 +116,7 @@ const update_emitter_from_pointer = event => {
 canvas.addEventListener('pointerdown', event => {
   emitter.active = true              // set emitter to true (active) when pointer is down 
   update_emitter_from_pointer(event) // update the emitter's position and velocity based on the pointer input
+  canvas.setPointerCapture?.(event.pointerId) // keep receiving pointer events even if the pointer leaves the canvas
 })
 
 // Pointer move event
@@ -129,12 +130,15 @@ const end_pointer = event => {
   emitter.active = false // set emitter to false (inactive) when pointer is up
   emitter.vx = 0         // reset x velocity to 0 when pointer is up
   emitter.vy = 0         // reset y velocity to 0 when pointer is up
+  canvas.releasePointerCapture?.(event.pointerId) // stop capturing the pointer when the drag ends
 }
 
 // Listen for the pointer events
 canvas.addEventListener('pointerup', end_pointer)
 canvas.addEventListener('pointercancel', end_pointer)
-canvas.addEventListener('pointerleave', end_pointer)
+canvas.addEventListener('pointerleave', event => {
+  if (event.buttons === 0) end_pointer(event) // only end if the pointer has actually been released
+})
 
 // Render pass
 const render = await sg.render({
